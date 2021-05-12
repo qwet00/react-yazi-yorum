@@ -28,7 +28,7 @@ app.get("/", (req, res) => {
   res.status(200).json({ server: "up" });
 });
 
-
+const baseURL = `https://yazi-yorums.herokuapp.com`;
 
 app.use(express.static(path.join(__dirname, './public')));
 
@@ -43,6 +43,9 @@ const db= mysql.createPool({
   password: "Mudekpassword1.",
   database: "mudek_db",
 });
+
+
+
 
 app.get("/api/get",(req,res)  =>{
   const sqlSelect= "SELECT * FROM users";
