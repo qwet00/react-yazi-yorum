@@ -52,6 +52,8 @@ app.get("/api/get",(req,res)  =>{
 
 });
 
+
+
 /*Giris*/
 app.post("/api/giris", (req,res) =>{
   const passW= req.body.password;
