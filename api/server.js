@@ -569,11 +569,11 @@ const upload = multer({ storage });
 
 
 app.post('/api/images/single-upload', upload.single('file'), async (req, res) => {
-
+  console.log(imagepath)
     let imagePath = req.file.path.replace("public",baseURL);
-
+    console.log(imagepath)
     imagePath = imagePath.split('server')[1].substring(1, imagePath.length);
-
+    console.log(imagepath)
     return res.json({
         imagePath
     });
