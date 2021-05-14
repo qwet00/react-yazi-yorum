@@ -38,10 +38,10 @@ app.use(helmet());
 
 
 const db= mysql.createPool({
-  host: "localhost",
-  user: "mudek",
-  password: "Mudekpassword1.",
-  database: "mudek_db",
+  host: "eu-cdbr-west-01.cleardb.com",
+  user: "bd8a5e84b46cc3",
+  password: "60d8905d",
+  database: "heroku_0b98794dfc4c945",
 });
 
 
