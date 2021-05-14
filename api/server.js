@@ -492,7 +492,7 @@ app.post('/api/depdocs/single-upload', upload2.single('file'), async (req, res) 
 
     let docPath = req.file.path.replace("public",baseURL);
 
-    docPath = docPath.split('react-yazi-yorum')[1].substring(1, docPath.length);
+    docPath = docPath.split('react-yazi-yorum/api')[1].substring(1, docPath.length);
 
     return res.json({
         docPath
@@ -569,17 +569,14 @@ const upload = multer({ storage });
 
 
 app.post('/api/images/single-upload', upload.single('file'), async (req, res) => {
-  let imagePath = "req.file.path";
-  return res.json({
-      imagePath
-  });
-  /*  let imagePath = req.file.path.replace("public",baseURL);
-    console.log(imagepath)
-    imagePath = imagePath.split('react-yazi-yorum')[1].substring(1, imagePath.length);
-    console.log(imagepath)
+
+    let imagePath = req.file.path.replace("public",baseURL);
+
+    imagePath = imagePath.split('react-yazi-yorum/api')[1].substring(1, imagePath.length);
+
     return res.json({
         imagePath
-    });*/
+    });
 });
 
 
@@ -705,7 +702,7 @@ app.post("/api/asistan/documanGoruntule",(req,res)  =>{
 
       let docPath = req.file.path.replace("public",baseURL);
 
-      docPath = docPath.split('react-yazi-yorum')[1].substring(1, docPath.length);
+      docPath = docPath.split('react-yazi-yorum/api')[1].substring(1, docPath.length);
 
       return res.json({
           docPath
