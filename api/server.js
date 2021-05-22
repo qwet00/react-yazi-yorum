@@ -16,7 +16,7 @@ const helmet = require("helmet");
 
 app.use(express.json());
 app.use(cors());
-app.use(helmet());
+
 
 
 // const userRouter = require("../data/routers/user-router");
@@ -28,7 +28,7 @@ app.get("/", (req, res) => {
   res.status(200).json({ server: "up" });
 });
 
-const baseURL = `https://yazi-yorums.herokuapp.com`;
+const baseURL =  'http://localhost:4001' //`https://yazi-yorums.herokuapp.com`;
 
 app.use(express.static(path.join(__dirname, './public')));
 
@@ -38,10 +38,15 @@ app.use(helmet());
 
 
 const db= mysql.createPool({
-  host: "eu-cdbr-west-01.cleardb.com",
+  host: "localhost",
+  user: "mudek",
+  password: "Mudekpassword1.",
+  database: "mudek_db",
+
+/*  host: "eu-cdbr-west-01.cleardb.com",
   user: "bd8a5e84b46cc3",
   password: "60d8905d",
-  database: "heroku_0b98794dfc4c945",
+  database: "heroku_0b98794dfc4c945",*/
 });
 
 
@@ -807,6 +812,56 @@ app.post("/api/asistan/documanGoruntule",(req,res)  =>{
    });
   });
 
+  /* anket ekle */
+
+  const storage5 = multer.diskStorage({
+      destination: (req, file, cb) => {
+          cb(null, `${__dirname}/./public/surveydocs`);
+      },
+      filename: (req, file, cb) => {
+          let lastIndex = file.originalname.lastIndexOf(".");
+          // get the original extension of the file
+          let extension = file.originalname.substring(lastIndex);
+          // Create the file on the server
+          cb(null, `document-${Date.now()}${extension}`);
+      }
+  });
+
+  const upload5 = multer({ storage:storage5 });
+
+
+  app.post('/api/anketdocs/single-upload', upload5.single('file'), async (req, res) => {
+
+      let docPath = req.file.path.replace("public",baseURL);
+
+      docPath = docPath.split('api')[1].substring(1, docPath.length);
+
+      return res.json({
+          docPath
+      });
+  });
+
+  app.post("/api/instructor/anketDocEkle", (req,res) =>{
+    const lecture_det_id= req.body.lectureDetId;
+    const filePath= req.body.path;
+    const docName =req.body.name;
+    const docExp =req.body.explanation;
+
+
+    const sqlInsert=  "INSERT INTO survey_docs (lecture_det_id,path,doc_desc,doc_name) VALUES (?,?,?,?);";
+
+   db.query(sqlInsert,[lecture_det_id,filePath,docExp,docName],(err,result)  =>{
+       if(err){
+         res.send({message:"Bir Sorun Oluştu."});
+         console.log(err)
+       }else{
+         res.send({message:"Başarılı."});
+       }
+   });
+  });
+
+  /*anet ekle*/
+
   /*Ders içi döküman kaldır*/
   app.post("/api/egitmen/lecdocsil", (req,res) =>{
     const id= req.body.docId;
@@ -838,6 +893,43 @@ app.post("/api/asistan/documanGoruntule",(req,res)  =>{
        }
    });
   });
+
+
+  /*anket guncelle - sil*/
+
+  app.post("/api/egitmen/anketdocsil", (req,res) =>{
+    const id= req.body.docId;
+
+    const sqlInsert=  "Delete from survey_docs where doc_id = ?;";
+   db.query(sqlInsert,[id],(err,result)  =>{
+       if(err){
+         res.send({message:"Bir sorun oluştu."});
+         console.log(err)
+       }else{
+         res.send({message:"Döküman Silindi."});
+       }
+   });
+  });
+
+
+  app.post("/api/egitmen/anketdocguncelle", (req,res) =>{
+    const id= req.body.docId;
+    const desc= req.body.desc;
+    const exp= req.body.exp;
+
+    const sqlInsert=  "UPDATE survey_docs set doc_name = ? , doc_desc = ? where doc_id = ?;";
+   db.query(sqlInsert,[desc,exp,id],(err,result)  =>{
+       if(err){
+         res.send({message:"Bir sorun oluştu."});
+         console.log(err)
+       }else{
+         res.send({message:"Guncellendi."});
+       }
+   });
+  });
+
+
+  /*anket doc guncelle  -sil*/
 
   /*kazanım ekle*/
   app.post("/api/instructor/kazanimEkle", (req,res) =>{
@@ -930,6 +1022,29 @@ app.post("/api/asistan/documanGoruntule",(req,res)  =>{
     });
 
   });
+
+
+  app.post("/api/egitmen/anketDocGoruntule",(req,res)  =>{
+    const det_ID=req.body.lecDetID;
+    const sqlSelect= "SELECT * FROM survey_docs where lecture_det_id=? ";
+
+    db.query(sqlSelect,[det_ID],(err,result)=>{
+      res.send(result);
+    });
+
+  });
+
+
+  app.post("/api/egitmen/anketdocumanGoruntule",(req,res)  =>{
+    id=req.body.docID
+
+    const sqlSelect= "SELECT * FROM survey_docs where doc_id=?";
+    db.query(sqlSelect,[id],(err,result)=>{
+      res.send(result);
+    });
+
+  });
+
 
 
   app.post("/api/egitmen/kazanimGoruntule",(req,res)  =>{
